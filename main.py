@@ -5,18 +5,17 @@ is copy the entry file next to it into $MAKEFUN_OUTPUT_DIR, byte for byte.
 """
 
 import os
-import shutil
+from pathlib import Path
 
 ENTRY_NAME = "entry.txt"
 
 
 def main():
-    out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
-    os.makedirs(out_dir, exist_ok=True)
-    here = os.path.dirname(os.path.abspath(__file__))
-    src = os.path.join(here, ENTRY_NAME)
-    dst = os.path.join(out_dir, ENTRY_NAME)
-    shutil.copyfile(src, dst)
+    out_dir = Path(os.environ.get("MAKEFUN_OUTPUT_DIR", "/output"))
+    out_dir.mkdir(parents=True, exist_ok=True)
+    src = Path(__file__).resolve().parent / ENTRY_NAME
+    # read_bytes/write_bytes keeps the payload byte-identical, no newline games.
+    (out_dir / ENTRY_NAME).write_bytes(src.read_bytes())
 
 
 if __name__ == "__main__":
